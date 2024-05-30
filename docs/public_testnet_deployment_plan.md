@@ -358,38 +358,38 @@ The EOS EVM Team must perform the following steps:
 - Run the following transaction:
 
 ```sh
-./cleos create account CREATOR_ACCOUNT evmevmevmevm TEMP_PUBLIC_KEY TEMP_PUBLIC_KEY
+./focli create account CREATOR_ACCOUNT evmevmevmevm TEMP_PUBLIC_KEY TEMP_PUBLIC_KEY
 ```
 
-See the [cleos create account](https://docs.eosnetwork.com/leap/latest/cleos/command-reference/create/account) reference for details on how to create an account.
+See the [focli create account](https://docs.eosnetwork.com/leap/latest/focli/command-reference/create/account) reference for details on how to create an account.
 
-See the [cleos create key pair](https://docs.eosnetwork.com/leap/latest/cleos/command-reference/create/key) reference for details on how to create a key pair.
+See the [focli create key pair](https://docs.eosnetwork.com/leap/latest/focli/command-reference/create/key) reference for details on how to create a key pair.
 
 ### 2. Deploy EVM Contract
 
 For details on how to compile the EVM smart contract see the [Compilation And Testing Guide](https://github.com/eosnetworkfoundation/eos-evm/blob/main/docs/compilation_and_testing_guide.md).
 
-Run the following `cleos` commands to EVM contract to the EVM account:
+Run the following `focli` commands to EVM contract to the EVM account:
 
 ```sh
-./cleos set code evmevmevmevm EVM_PATH_to_evm_runtime.wasm
-./cleos set abi evmevmevmevm EVM_PATH_to_evm_runtime.abi
+./focli set code evmevmevmevm EVM_PATH_to_evm_runtime.wasm
+./focli set abi evmevmevmevm EVM_PATH_to_evm_runtime.abi
 ```
 
 ### 2a. Initialize EVM contract
 The EVM contract will not allow any actions except `init` until its chain id & native token is configured. Exact values to use here are TBD.
 ```
-./cleos push action evmevmevmevm init "{\"chainid\":$EVM_CHAINID,\"fee_params\":{\"gas_price\":150000000000,\"miner_cut\":10000,\"ingress_bridge_fee\":\"0.0100 EOS\"}}" -x 60 -p evmevmevmevm
+./focli push action evmevmevmevm init "{\"chainid\":$EVM_CHAINID,\"fee_params\":{\"gas_price\":150000000000,\"miner_cut\":10000,\"ingress_bridge_fee\":\"0.0100 EOS\"}}" -x 60 -p evmevmevmevm
 ```
 
 add eosio.code to active permission
 ```
-./cleos set account permission evmevmevmevm active --add-code
+./focli set account permission evmevmevmevm active --add-code
 ```
 
 transfer initial balance
 ```
-./cleos transfer eosio evmevmevmevm "1.0000 EOS" "evmevmevmevm"
+./focli transfer eosio evmevmevmevm "1.0000 EOS" "evmevmevmevm"
 ```
 
 ## For EVM Service Providers
@@ -403,7 +403,7 @@ Run at least one Antelope node to sync with the public testnet, running in irrev
 
 Example command:
 ```sh
-./build/programs/nodeos/nodeos --data-dir=./data-dir  --config-dir=./data-dir --genesis-json=./data-dir/genesis.json --disable-replay-opts
+./build/programs/fonod/fonod --data-dir=./data-dir  --config-dir=./data-dir --genesis-json=./data-dir/genesis.json --disable-replay-opts
 ```
 
 ### 2. Run eos-evm-node
@@ -422,7 +422,7 @@ Run at least one eos-evm-rpc, a.k.a. silkworm rpc, process to sync with the eos-
 The eos-evm-rpc must be deployed on the same machine with eos-evm-node, as it needs to access the same chain-data folder.
 
 ```sh
-./build/cmd/eos-evm-rpc --eos-evm-node=127.0.0.1:8080 --chaindata=./chain-data 
+./build/cmd/eos-evm-rpc --eos-evm-node=127.0.0.1:8080 --chaindata=./chain-data
 ```
 
 Refer to the *Start up eos-evm-rpc (silkworm RPC)* section in the [Enable EVM For Local Testnet](https://github.com/eosnetworkfoundation/eos-evm/blob/main/docs/local_testnet_deployment_plan.md#6-start-up-eos-evm-rpc-silkworm-rpc) guide for more RPC setup details.
@@ -431,9 +431,9 @@ Refer to the *Start up eos-evm-rpc (silkworm RPC)* section in the [Enable EVM Fo
 
 You must have at least one Antelope account, the sender account, with enough CPU/NET/RAM resources. The service providers can create one or more testnet accounts with some CPU, NET, and RAM resources. We use account a123 as example:
 
-open sender account balance 
+open sender account balance
 ```
-./cleos push action evmevmevmevm open '{"owner":"a123"}' -p a123
+./focli push action evmevmevmevm open '{"owner":"a123"}' -p a123
 ```
 
 ### 5. Run a Transaction Wrapper Service

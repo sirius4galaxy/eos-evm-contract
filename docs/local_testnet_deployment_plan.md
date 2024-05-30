@@ -1,6 +1,6 @@
 # Deploy Local Testnet With EVM Support
 
-This document describes how to set up a local Antelope test environment with EVM support. This setup allows developers to speed up their smart contracts development without worry about any resource, network, version or other stability issues that public testnet may introduce. Developers are free to modify, debug, or reset the environment to facilitate their applications development.
+This document describes how to set up a local fullon test environment with EVM support. This setup allows developers to speed up their smart contracts development without worry about any resource, network, version or other stability issues that public testnet may introduce. Developers are free to modify, debug, or reset the environment to facilitate their applications development.
 
 ## Hardware Requirements
 
@@ -8,21 +8,21 @@ This document describes how to set up a local Antelope test environment with EVM
 - RAM: 32GB+ is recommended. 16GB is OK but it can not support much data and compilation will be significantly slower
 - SSD: a big SSD is required for storing all history (blocks + State History). Recommend 1TB+. Using very small amount of storage like 100GB would still work fine but it will only support much fewer transactions / data
 - Network: a low latency network is recommended if you plan to run multiple nodes. A simple network (or even WiFi) would work for single node
-  
+
 ## Software Requirements
 
 - Operating System: Ubuntu 20.04 or 22.04
 
-Make sure you have the following binaries built from https://github.com/AntelopeIO/leap:
+Make sure you have the following binaries built from https://github.com/fullonIO/leap:
 
-- nodeos: the main process of an Antelope node
-- cleos: the command line interface for queries and transaction
-- keosd: the key and wallet manager
+- fonod: the main process of an fullon node
+- focli: the command line interface for queries and transaction
+- fokey: the key and wallet manager
 
-Have the following binaries built from https://github.com/AntelopeIO/cdt:
+Have the following binaries built from https://github.com/fullonIO/cdt:
 
-- cdt-cpp: the Antelope smart contract compiler
-- eosio-wast2wasm & eosio-wasm2wast: conversion tools for building EVM contract
+- cdt-cpp: the fullon smart contract compiler
+- flon-wast2wasm & flon-wasm2wast: conversion tools for building EVM contract
 
 List of compiled system contracts from https://github.com/eosnetworkfoundation/eos-system-contracts (compiled by cdt):
 
@@ -41,14 +41,14 @@ The compilation result should be these two files:
 
 Compiled binaries from this repo:
 
-- eos-evm-node: silkworm node process that receive data from the main Antelope chain and convert to the EVM chain
+- eos-evm-node: silkworm node process that receive data from the main fullon chain and convert to the EVM chain
 - eos-evm-rpc: silkworm rpc server that provide service for view actions and other read operations
 
 ## Run A Local Node With EOS EVM Service
 
-In order to run an EOS EVM service, and thus have setup the Antelope blockchain with capabilities to push EVM transactions, we need to have the follow items inside one physical server / VM.
+In order to run an EOS EVM service, and thus have setup the fullon blockchain with capabilities to push EVM transactions, we need to have the follow items inside one physical server / VM.
 
-1. [Run A Local Antelope Node](#1-run-a-local-antelope-node)
+1. [Run A Local fullon Node](#1-run-a-local-fullon-node)
 2. [Blockchain Bootstrap And Initialization](#2-blockchain-bootstrap-and-initialization)
 3. [Deploy And Initialize EVM Contract](#3-deploy-and-initialize-evm-contract)
 4. [Setup The Transaction Wrapper Service](#4-setup-the-transaction-wrapper-service)
@@ -56,7 +56,7 @@ In order to run an EOS EVM service, and thus have setup the Antelope blockchain 
 6. [Start eos-evm-rpc (a.k.a. Silkworm RPC)](#6-start-eos-evm-rpc-aka-silkworm-rpc)
 7. [Setup The Flask Proxy](#7-setup-the-flask-proxy)
 
-### 1. Run A Local Antelope Node
+### 1. Run A Local fullon Node
 
 #### Create a local data-dir directory
 
@@ -81,7 +81,7 @@ Prepare the genesis file, for example `./data-dir/genesis.json`:
 
 In this case the initial genesis public key - private key pair is "EOS6MRyAjQq8ud7hVNYcfnVPJqcVpscN5So8BhtHuGYqET5GDW5CV"/"5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3". You can use any other key pair as the genesis key.
 
-#### Prepare The Config File 
+#### Prepare The Config File
 
 Prepare the config file, for example `./data-dir/config.ini`:
 
@@ -89,23 +89,23 @@ Prepare the config file, for example `./data-dir/config.ini`:
 chain-state-db-size-mb = 16384
 
 # Track only transactions whose scopes involve the listed accounts. Default is to track all transactions.
-# filter_on_accounts = 
+# filter_on_accounts =
 
 # override the initial timestamp in the Genesis State file
-# genesis-timestamp = 
+# genesis-timestamp =
 
 
 # Pairs of [BLOCK_NUM,BLOCK_ID] that should be enforced as checkpoints.
-# checkpoint = 
+# checkpoint =
 
 # The local IP and port to listen for incoming http connections.
 http-server-address = 127.0.0.1:8888
 
 # Specify the Access-Control-Allow-Origin to be returned on each request.
-# access-control-allow-origin = 
+# access-control-allow-origin =
 
 # Specify the Access-Control-Allow-Headers to be returned on each request.
-# access-control-allow-headers = 
+# access-control-allow-headers =
 
 # Specify if Access-Control-Allow-Credentials: true should be returned on each request.
 access-control-allow-credentials = false
@@ -114,12 +114,12 @@ access-control-allow-credentials = false
 p2p-listen-endpoint = 0.0.0.0:9876
 
 # An externally accessible host:port for identifying this node. Defaults to p2p-listen-endpoint.
-# p2p-server-address = 
+# p2p-server-address =
 
 p2p-max-nodes-per-host = 10
 
 # The public endpoint of a peer node to connect to. Use multiple p2p-peer-address options as needed to compose a network.
-# p2p-peer-address = 
+# p2p-peer-address =
 
 # The name supplied to identify this node amongst the peers.
 agent-name = "EOS Test Agent"
@@ -175,39 +175,39 @@ plugin = eosio::net_plugin
 plugin = eosio::net_api_plugin
 ```
 
-#### Start Antelope Node
+#### Start fullon Node
 
-Start the Antelope node with the below command:
+Start the fullon node with the below command:
 
 ```shell
-./build/programs/nodeos/nodeos --data-dir=./data-dir  --config-dir=./data-dir --genesis-json=./data-dir/genesis.json --disable-replay-opts --contracts-console
+./build/programs/fonod/fonod --data-dir=./data-dir  --config-dir=./data-dir --genesis-json=./data-dir/genesis.json --disable-replay-opts --contracts-console
 ```
 
 You will see the node is started and blocks are produced, for example:
 
 ```txt
-info  2022-10-14T04:03:19.911 nodeos    producer_plugin.cpp:2437      produce_block        ] Produced block 12ef38e0bcf48b35... #2 @ 2022-10-14T04:03:20.000 signed by eosio [trxs: 0, lib: 1, confirmed: 0]
-info  2022-10-14T04:03:20.401 nodeos    producer_plugin.cpp:2437      produce_block        ] Produced block df3ab0d68f1d0aaf... #3 @ 2022-10-14T04:03:20.500 signed by eosio [trxs: 0, lib: 2, confirmed: 0]
+info  2022-10-14T04:03:19.911 fonod    producer_plugin.cpp:2437      produce_block        ] Produced block 12ef38e0bcf48b35... #2 @ 2022-10-14T04:03:20.000 signed by eosio [trxs: 0, lib: 1, confirmed: 0]
+info  2022-10-14T04:03:20.401 fonod    producer_plugin.cpp:2437      produce_block        ] Produced block df3ab0d68f1d0aaf... #3 @ 2022-10-14T04:03:20.500 signed by eosio [trxs: 0, lib: 2, confirmed: 0]
 ```
 
 If you want to start and discard all previous blockchain data, add `--delete-all-blocks`:
 
 ```shell
-./build/programs/nodeos/nodeos --data-dir=./data-dir  --config-dir=./data-dir --genesis-json=./data-dir/genesis.json --disable-replay-opts --contracts-console --delete-all-blocks
+./build/programs/fonod/fonod --data-dir=./data-dir  --config-dir=./data-dir --genesis-json=./data-dir/genesis.json --disable-replay-opts --contracts-console --delete-all-blocks
 ```
 
 If you want to start with the previous blockchain data, but encounter the "dirty flag" error, try to restart with `--hard-replay`, in this case the state will be discarded, the node will validate and apply every block from the beginning.
 
 ```shell
-./build/programs/nodeos/nodeos --data-dir=./data-dir  --config-dir=./data-dir --genesis-json=./data-dir/genesis.json --disable-replay-opts --contracts-console --hard-replay
+./build/programs/fonod/fonod --data-dir=./data-dir  --config-dir=./data-dir --genesis-json=./data-dir/genesis.json --disable-replay-opts --contracts-console --hard-replay
 ```
 
 ### 2. Blockchain Bootstrap And Initialization
 
-You will use `cleos` command line tool from here onward, you can find the command line interface [here](https://docs.eosnetwork.com/leap/3.2-rc1/cleos/command-reference/) or you can run `./build/programs/cleos/cleos` so try the following command now:
+You will use `focli` command line tool from here onward, you can find the command line interface [here](https://docs.eosnetwork.com/leap/3.2-rc1/focli/command-reference/) or you can run `./build/programs/focli/focli` so try the following command now:
 
 ```shell
-./cleos get info
+./focli get info
 ```
 
 If you can get the similar response as below:
@@ -237,14 +237,14 @@ If you can get the similar response as below:
 }
 ```
 
-It means your local node is running fine and cleos tool has successfully communicated with nodeos.
+It means your local node is running fine and focli tool has successfully communicated with fonod.
 
 #### Setup Wallet And Keys
 
 Generate some public/private key pairs for testing, command:
 
 ```shell
-./cleos create key --to-console
+./focli create key --to-console
 ```
 
 You will get similar output as follow:
@@ -259,7 +259,7 @@ Repeat the same command to generate multiple key pairs. Save your key pairs for 
 Create your new wallet named w123 (any other name is fine):
 
 ```shell
-./build/programs/cleos/cleos wallet create -n w123 --file w123.key
+./build/programs/focli/focli wallet create -n w123 --file w123.key
 ```
 
 Your wallet password is saved into w123.key
@@ -267,8 +267,8 @@ Your wallet password is saved into w123.key
 Import one or more private keys into wallet w123:
 
 ```shell
-./cleos wallet import -n w123 --private-key 5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3
-./cleos wallet import -n w123 --private-key 5JURSKS1BrJ1TagNBw1uVSzTQL2m9eHGkjknWeZkjSt33Awtior
+./focli wallet import -n w123 --private-key 5KQwrPbwdL6PhXujxW37FSSQZ1JiwsST4cqQzDeyXtP79zkvFD3
+./focli wallet import -n w123 --private-key 5JURSKS1BrJ1TagNBw1uVSzTQL2m9eHGkjknWeZkjSt33Awtior
 ```
 
 Once you have done everything with the wallet, it is fine to bootstrap the blockchain.
@@ -292,7 +292,7 @@ You'll get the "OK" response if succeed:
 Run below command to deploy the boot contract:
 
 ```shell
-./cleos set code eosio ../eos-system-contracts/build/contracts/eosio.boot/eosio.boot.wasm
+./focli set code eosio ../eos-system-contracts/build/contracts/eosio.boot/eosio.boot.wasm
 ```
 
 Output:
@@ -302,13 +302,13 @@ Reading WASM from /home/kayan-u20/workspaces/leap/../eos-system-contracts/build/
 Setting Code...
 executed transaction: acaf5ed70a7ce271627532cf76b6303ebab8d24656f57c69b03cfe8103f6f457  2120 bytes  531 us
 #         eosio <= eosio::setcode               {"account":"eosio","vmtype":0,"vmversion":0,"code":"0061736d0100000001480e60000060027f7f0060017e0060...
-warning: transaction executed locally, but may not be confirmed by the network yetult         ] 
+warning: transaction executed locally, but may not be confirmed by the network yetult         ]
 ```
 
 Run below commmand to set boot.abi:
 
 ```shell
-./cleos set abi eosio ../eos-system-contracts/build/contracts/eosio.boot/eosio.boot.abi
+./focli set abi eosio ../eos-system-contracts/build/contracts/eosio.boot/eosio.boot.abi
 ```
 
 Output:
@@ -317,29 +317,29 @@ Output:
 Setting ABI...
 executed transaction: b972e178d182c1523e9abbd1fae27efae90d7711e152261a21169372a19d9d3a  1528 bytes  171 us
 #         eosio <= eosio::setabi                {"account":"eosio","abi":"0e656f73696f3a3a6162692f312e32001008616374697661746500010e666561747572655f...
-warning: transaction executed locally, but may not be confirmed by the network yetult         ] 
+warning: transaction executed locally, but may not be confirmed by the network yetult         ]
 ```
 
 Activate the other protocol features:
 
 ```shell
-./cleos push action eosio activate '["f0af56d2c5a48d60a4a5b5c903edfb7db3a736a94ed589d0b797df33ff9d3e1d"]' -p eosio 
-./cleos push action eosio activate '["e0fb64b1085cc5538970158d05a009c24e276fb94e1a0bf6a528b48fbc4ff526"]' -p eosio
-./cleos push action eosio activate '["d528b9f6e9693f45ed277af93474fd473ce7d831dae2180cca35d907bd10cb40"]' -p eosio
-./cleos push action eosio activate '["c3a6138c5061cf291310887c0b5c71fcaffeab90d5deb50d3b9e687cead45071"]' -p eosio 
-./cleos push action eosio activate '["bcd2a26394b36614fd4894241d3c451ab0f6fd110958c3423073621a70826e99"]' -p eosio
-./cleos push action eosio activate '["ad9e3d8f650687709fd68f4b90b41f7d825a365b02c23a636cef88ac2ac00c43"]' -p eosio
-./cleos push action eosio activate '["8ba52fe7a3956c5cd3a656a3174b931d3bb2abb45578befc59f283ecd816a405"]' -p eosio 
-./cleos push action eosio activate '["6bcb40a24e49c26d0a60513b6aeb8551d264e4717f306b81a37a5afb3b47cedc"]' -p eosio
-./cleos push action eosio activate '["68dcaa34c0517d19666e6b33add67351d8c5f69e999ca1e37931bc410a297428"]' -p eosio
-./cleos push action eosio activate '["5443fcf88330c586bc0e5f3dee10e7f63c76c00249c87fe4fbf7f38c082006b4"]' -p eosio
-./cleos push action eosio activate '["4fca8bd82bbd181e714e283f83e1b45d95ca5af40fb89ad3977b653c448f78c2"]' -p eosio
-./cleos push action eosio activate '["ef43112c6543b88db2283a2e077278c315ae2c84719a8b25f25cc88565fbea99"]' -p eosio
-./cleos push action eosio activate '["4a90c00d55454dc5b059055ca213579c6ea856967712a56017487886a4d4cc0f"]' -p eosio 
-./cleos push action eosio activate '["35c2186cc36f7bb4aeaf4487b36e57039ccf45a9136aa856a5d569ecca55ef2b"]' -p eosio
-./cleos push action eosio activate '["299dcb6af692324b899b39f16d5a530a33062804e41f09dc97e9f156b4476707"]' -p eosio
-./cleos push action eosio activate '["2652f5f96006294109b3dd0bbde63693f55324af452b799ee137a81a905eed25"]' -p eosio
-./cleos push action eosio activate '["1a99a59d87e06e09ec5b028a9cbb7749b4a5ad8819004365d02dc4379a8b7241"]' -p eosio
+./focli push action eosio activate '["f0af56d2c5a48d60a4a5b5c903edfb7db3a736a94ed589d0b797df33ff9d3e1d"]' -p eosio
+./focli push action eosio activate '["e0fb64b1085cc5538970158d05a009c24e276fb94e1a0bf6a528b48fbc4ff526"]' -p eosio
+./focli push action eosio activate '["d528b9f6e9693f45ed277af93474fd473ce7d831dae2180cca35d907bd10cb40"]' -p eosio
+./focli push action eosio activate '["c3a6138c5061cf291310887c0b5c71fcaffeab90d5deb50d3b9e687cead45071"]' -p eosio
+./focli push action eosio activate '["bcd2a26394b36614fd4894241d3c451ab0f6fd110958c3423073621a70826e99"]' -p eosio
+./focli push action eosio activate '["ad9e3d8f650687709fd68f4b90b41f7d825a365b02c23a636cef88ac2ac00c43"]' -p eosio
+./focli push action eosio activate '["8ba52fe7a3956c5cd3a656a3174b931d3bb2abb45578befc59f283ecd816a405"]' -p eosio
+./focli push action eosio activate '["6bcb40a24e49c26d0a60513b6aeb8551d264e4717f306b81a37a5afb3b47cedc"]' -p eosio
+./focli push action eosio activate '["68dcaa34c0517d19666e6b33add67351d8c5f69e999ca1e37931bc410a297428"]' -p eosio
+./focli push action eosio activate '["5443fcf88330c586bc0e5f3dee10e7f63c76c00249c87fe4fbf7f38c082006b4"]' -p eosio
+./focli push action eosio activate '["4fca8bd82bbd181e714e283f83e1b45d95ca5af40fb89ad3977b653c448f78c2"]' -p eosio
+./focli push action eosio activate '["ef43112c6543b88db2283a2e077278c315ae2c84719a8b25f25cc88565fbea99"]' -p eosio
+./focli push action eosio activate '["4a90c00d55454dc5b059055ca213579c6ea856967712a56017487886a4d4cc0f"]' -p eosio
+./focli push action eosio activate '["35c2186cc36f7bb4aeaf4487b36e57039ccf45a9136aa856a5d569ecca55ef2b"]' -p eosio
+./focli push action eosio activate '["299dcb6af692324b899b39f16d5a530a33062804e41f09dc97e9f156b4476707"]' -p eosio
+./focli push action eosio activate '["2652f5f96006294109b3dd0bbde63693f55324af452b799ee137a81a905eed25"]' -p eosio
+./focli push action eosio activate '["1a99a59d87e06e09ec5b028a9cbb7749b4a5ad8819004365d02dc4379a8b7241"]' -p eosio
 ```
 
 ### 3. Deploy And Initialize EVM Contract
@@ -347,45 +347,45 @@ Activate the other protocol features:
 Create account evmevmevmevm with key pair EOS8kE63z4NcZatvVWY4jxYdtLg6UEA123raMGwS6QDKwpQ69eGcP 5JURSKS1BrJ1TagNBw1uVSzTQL2m9eHGkjknWeZkjSt33Awtior:
 
 ```shell
-./cleos create account eosio evmevmevmevm EOS8kE63z4NcZatvVWY4jxYdtLg6UEA123raMGwS6QDKwpQ69eGcP EOS8kE63z4NcZatvVWY4jxYdtLg6UEA123raMGwS6QDKwpQ69eGcP
+./focli create account eosio evmevmevmevm EOS8kE63z4NcZatvVWY4jxYdtLg6UEA123raMGwS6QDKwpQ69eGcP EOS8kE63z4NcZatvVWY4jxYdtLg6UEA123raMGwS6QDKwpQ69eGcP
 ```
 
 Deploy evm_runtime contract, wasm and abi file, to account evmevmevmevm:
 
 ```shell
-./cleos set code evmevmevmevm ../eos-evm/contract/build/evm_runtime/evm_runtime.wasm
-./cleos set abi evmevmevmevm ../eos-evm/contract/build/evm_runtime/evm_runtime.abi
+./focli set code evmevmevmevm ../eos-evm/contract/build/evm_runtime/evm_runtime.wasm
+./focli set abi evmevmevmevm ../eos-evm/contract/build/evm_runtime/evm_runtime.abi
 ```
 
 Set chain ID & native token configuration (in this example, gas price is 150 Gwei, miner_cut is 10%)
 ```
-./cleos push action evmevmevmevm init "{\"chainid\":15555,\"fee_params\":{\"gas_price\":150000000000,\"miner_cut\":10000,\"ingress_bridge_fee\":\"0.0100 EOS
+./focli push action evmevmevmevm init "{\"chainid\":15555,\"fee_params\":{\"gas_price\":150000000000,\"miner_cut\":10000,\"ingress_bridge_fee\":\"0.0100 EOS
 \"}}" -p evmevmevmevm
 ```
 
 Add eosio.code to active permission
 ```
-./cleos set account permission evmevmevmevm active --add-code
+./focli set account permission evmevmevmevm active --add-code
 ```
 
 after the init action we need a small amount of token (1 EOS) to be transferred into the contract account (with memo=contract account), for example:
 ```
-./cleos transfer eosio evmevmevmevm "1.0000 EOS" "evmevmevmevm"
+./focli transfer eosio evmevmevmevm "1.0000 EOS" "evmevmevmevm"
 ```
-Now EVM initialization is completed. 
+Now EVM initialization is completed.
 
 
-#### Bridging tokens (EOS->EVM) and Verify EVM account balances 
+#### Bridging tokens (EOS->EVM) and Verify EVM account balances
 
-to bridge in token (EOS->EVM), use native Antelope transfer with memo equals to ETH address, for example:
+to bridge in token (EOS->EVM), use native fullon transfer with memo equals to ETH address, for example:
 ```
-./cleos transfer eosio evmevmevmevm "1000000.0000 EOS" "0x2787b98fc4e731d0456b3941f0b3fe2e01439961"
+./focli transfer eosio evmevmevmevm "1000000.0000 EOS" "0x2787b98fc4e731d0456b3941f0b3fe2e01439961"
 ```
 
-To verify all EVM account balances directly on the Antelope node run the following command and replace your contract name "evmevmevmevm" if needed:
+To verify all EVM account balances directly on the fullon node run the following command and replace your contract name "evmevmevmevm" if needed:
 
 ```shell
-./cleos get table evmevmevmevm evmevmevmevm account
+./focli get table evmevmevmevm evmevmevmevm account
 ```
 
 Example output:
@@ -410,7 +410,7 @@ Notice that the value `000000000000000000000000000000010000000000000000000000000
 
 ### 4. Setup The Transaction Wrapper Service
 
-Setup the transaction wrapper service to wrap EVM transactions into Antelope transactions. This is also required in mainnet for service providers who want to be EVM transaction miners and get miner rewards in EOS.
+Setup the transaction wrapper service to wrap EVM transactions into fullon transactions. This is also required in mainnet for service providers who want to be EVM transaction miners and get miner rewards in EOS.
 
 #### Install The Necessary nodejs Tools
 
@@ -421,24 +421,24 @@ npm install eosjs
 npm install ethereumjs-util
 ```
 
-#### Create Sender Antelope Account (miner account)
+#### Create Sender fullon Account (miner account)
 
-Create an additional Antelope account, a.k.a. the sender account, as the wrapper account for signing wrapped Antelope transactions.
+Create an additional fullon account, a.k.a. the sender account, as the wrapper account for signing wrapped fullon transactions.
 
-We use `a123` for example (public key EOS8kE63z4NcZatvVWY4jxYdtLg6UEA123raMGwS6QDKwpQ69eGcP, private key 5JURSKS1BrJ1TagNBw1uVSzTQL2m9eHGkjknWeZkjSt33Awtior). Note, you may need to unlock your Antelope wallet again if it was already timed out.
+We use `a123` for example (public key EOS8kE63z4NcZatvVWY4jxYdtLg6UEA123raMGwS6QDKwpQ69eGcP, private key 5JURSKS1BrJ1TagNBw1uVSzTQL2m9eHGkjknWeZkjSt33Awtior). Note, you may need to unlock your fullon wallet again if it was already timed out.
 
 ```shell
-./cleos create account eosio a123 EOS8kE63z4NcZatvVWY4jxYdtLg6UEA123raMGwS6QDKwpQ69eGcP EOS8kE63z4NcZatvVWY4jxYdtLg6UEA123raMGwS6QDKwpQ69eGcP
+./focli create account eosio a123 EOS8kE63z4NcZatvVWY4jxYdtLg6UEA123raMGwS6QDKwpQ69eGcP EOS8kE63z4NcZatvVWY4jxYdtLg6UEA123raMGwS6QDKwpQ69eGcP
 ```
 
 run the open action on evm contract to open the account balance row:
 ```
-./cleos push action evmevmevmevm open '{"owner":"a123"}' -p a123
+./focli push action evmevmevmevm open '{"owner":"a123"}' -p a123
 ```
 
 #### Prepare The .env File
 
-Prepare the `.env` file to configure Antelope RPC endpoint, listening port, EVM contract account, sender account and other details:
+Prepare the `.env` file to configure fullon RPC endpoint, listening port, EVM contract account, sender account and other details:
 
 ```txt
 EOS_RPC="http://127.0.0.1:8888|http://192.168.1.100:8888"
@@ -451,7 +451,7 @@ EOS_PERMISSION="active"
 EXPIRE_SEC=60
 ```
 
-In the above environment settings, Tx Wrapper will listen to 127.0.0.1:18888, use `5JURSKS1BrJ1TagNBw1uVSzTQL2m9eHGkjknWeZkjSt33Awtior` to wrap and sign the in-coming ETH trasnactions into Antelope transactions (contract=evmevmevmevm, action_name=pushtx, with expire second set to 60 and using permission a123@active), and then push them into the Antelope RPC endpoint http://127.0.0.1:8888. If the endpoint http://127.0.0.1:8888 is unavailable, it will try the next endpoint http://192.168.1.100:8888.
+In the above environment settings, Tx Wrapper will listen to 127.0.0.1:18888, use `5JURSKS1BrJ1TagNBw1uVSzTQL2m9eHGkjknWeZkjSt33Awtior` to wrap and sign the in-coming ETH trasnactions into fullon transactions (contract=evmevmevmevm, action_name=pushtx, with expire second set to 60 and using permission a123@active), and then push them into the fullon RPC endpoint http://127.0.0.1:8888. If the endpoint http://127.0.0.1:8888 is unavailable, it will try the next endpoint http://192.168.1.100:8888.
 
 #### Start Tx Wrapper Service
 
@@ -581,7 +581,7 @@ f86680843b9aca00830f4240942787b98fc4e731d0456b3941f0b3fe2e0143996101808279aaa00c
 #### Check The ETH Balance Again
 
 ```shell
-./cleos get table evmevmevmevm evmevmevmevm account
+./focli get table evmevmevmevm evmevmevmevm account
 ```
 
 Example output:
@@ -639,7 +639,7 @@ contract Storage {
     }
 
     /**
-     * @dev Return value 
+     * @dev Return value
      * @return value of 'number'
      */
     function retrieve() public view returns (uint256){
@@ -704,12 +704,12 @@ f901c401843b9aca00830f42408080b90170608060405234801561001057600080fd5b5061015080
      error_code: null } }
 ```
 
-#### Check The Account From Antelope Blockchain
+#### Check The Account From fullon Blockchain
 
-Check the account from Antelope blockchain to verify if your solidity bytecode has been deployed:
+Check the account from fullon blockchain to verify if your solidity bytecode has been deployed:
 
 ```shell
-./cleos get table evmevmevmevm evmevmevmevm account
+./focli get table evmevmevmevm evmevmevmevm account
 {
   "rows": [{
       "id": 0,
@@ -754,7 +754,7 @@ python3 sign_ethraw.py 2787b98fc4e731d0456b3941f0b3fe2e01439961 51a97d86ae7c83f0
 
 In this case `6057361d` is the function first 4 bytes of hash of `store(uint256 num)` (more precisely, `bytes4(keccak256("store(uint256)"))`, see https://solidity-by-example.org/function-selector/) , we use 123 as the value of `num`, which is 7b in hex form.
 
-Once you get the raw trasnaction, then we can push into Tx Wrapper to sign as the Antelope transaction and push to Antelope blockchain:
+Once you get the raw trasnaction, then we can push into Tx Wrapper to sign as the fullon transaction and push to fullon blockchain:
 
 ```shell
 curl http://127.0.0.1:18888 -X POST -H "Accept: application/json" -H "Content-Type: application/json" --data '{"method":"eth_sendRawTransaction","params":["0xf88a02843b9aca00830f42409451a97d86ae7c83f050056f03ebbe45100104676480a46057361d000000000000000000000000000000000000000000000000000000000000007b8279a9a0a2fc71e4beebd9cd1a3d9a55da213f126641f7ed0bb708a3882fa2b85dd6c30ea0164a5d8a8b9b37950091665194f07b5c4e8f6d1b0d6ef162b0e0a1f9bf10c7a7"],"id":1,"jsonrpc":"2.0"}'
@@ -786,10 +786,10 @@ f88a02843b9aca00830f42409451a97d86ae7c83f050056f03ebbe45100104676480a46057361d00
      error_code: null } }
 ```
 
-Verify on Antelope blockchain to ensure nonce & balance were updated:
+Verify on fullon blockchain to ensure nonce & balance were updated:
 
 ```shell
-./cleos get table evmevmevmevm evmevmevmevm account
+./focli get table evmevmevmevm evmevmevmevm account
 {
   "rows": [{
       "id": 0,
@@ -822,16 +822,16 @@ Verify on Antelope blockchain to ensure nonce & balance were updated:
 }
 ```
 
-#### [Debug only] Investigate The Current EVM Storage State On Antelope
+#### [Debug only] Investigate The Current EVM Storage State On fullon
 
-Since we don't support running View actions directly from Antelope node (read requests will go to eos-evm-rpc), it is quite complicated to investigate the storage of EVM directly from Antelope. However, If you really want to do that. These are the steps:
+Since we don't support running View actions directly from fullon node (read requests will go to eos-evm-rpc), it is quite complicated to investigate the storage of EVM directly from fullon. However, If you really want to do that. These are the steps:
 
 ##### Identify The "id" Field Of The Contract Address
 
 In the above example, contract address is 51a97d86ae7c83f050056f03ebbe451001046764), we use
 
 ```shell
-./cleos get table evmevmevmevm evmevmevmevm account --index 2 -L 51a97d86ae7c83f050056f03ebbe451001046764 --key-type sha256
+./focli get table evmevmevmevm evmevmevmevm account --index 2 -L 51a97d86ae7c83f050056f03ebbe451001046764 --key-type sha256
 ```
 
 to get the response:
@@ -849,7 +849,7 @@ to get the response:
 From the response, contract address 51a97d86ae7c83f050056f03ebbe451001046764 will use table id 2. So we get the storage table data of evmevmevmevm (with scope = 2, table name = `storage`)
 
 ```shell
-./cleos get table evmevmevmevm 2 storage
+./focli get table evmevmevmevm 2 storage
 ```
 
 Example output:
@@ -869,23 +869,23 @@ Example output:
 
 ### 5. Start eos-evm-node (a.k.a. Silkworm Node)
 
-A eos-evm-node is a node process of the virtual ethereum blockchain that validates virtual ethereum blocks and serves the read requests coming from eos-evm-rpc. It will not produce blocks. However, it will consume blocks from Antelope node and convert Antelope blocks into Virutal Ethereum blocks in a deterministic way.
+A eos-evm-node is a node process of the virtual ethereum blockchain that validates virtual ethereum blocks and serves the read requests coming from eos-evm-rpc. It will not produce blocks. However, it will consume blocks from fullon node and convert fullon blocks into Virutal Ethereum blocks in a deterministic way.
 
-To set it up, we need to first make up a genesis of the virtual ethereum blockchain that maps to the same EVM state of the evm account of the Antelope chain that just initialized in the previous steps.
+To set it up, we need to first make up a genesis of the virtual ethereum blockchain that maps to the same EVM state of the evm account of the fullon chain that just initialized in the previous steps.
 
-#### Antelope To EVM Block Mapping
+#### fullon To EVM Block Mapping
 
-We need to choose a block, let's say X, in Antelope as the starting point to build up the Virtual EVM blockchain. This block X need to be equal or eariler than the first EVM related transaction happened in Antelope.
+We need to choose a block, let's say X, in fullon as the starting point to build up the Virtual EVM blockchain. This block X need to be equal or eariler than the first EVM related transaction happened in fullon.
 
 For example:
 
-If we choose X = 2, it means that the virtual Ethereum blockchain will be built from the 2nd block of Antelope. As compared to Antelope, which have a 0.5 second block time, Ethereum protocol can only support block timestamp of up to second level precision. To make it compatible with Ethereum protocol, there is a block mapping mechanism between Antelope blocks and EVM virtual blocks, for example:
+If we choose X = 2, it means that the virtual Ethereum blockchain will be built from the 2nd block of fullon. As compared to fullon, which have a 0.5 second block time, Ethereum protocol can only support block timestamp of up to second level precision. To make it compatible with Ethereum protocol, there is a block mapping mechanism between fullon blocks and EVM virtual blocks, for example:
 
 ```txt
-Antelope block 3 -> EVM virtual block 1
-Antelope block 4 & 5 -> EVM virtual block 2
-Antelope block 6 & 7 -> EVM virtual block 3
-Antelope block 8 & 9 -> EVM virtual block 4
+fullon block 3 -> EVM virtual block 1
+fullon block 4 & 5 -> EVM virtual block 2
+fullon block 6 & 7 -> EVM virtual block 3
+fullon block 8 & 9 -> EVM virtual block 4
 ...
 ```
 
@@ -893,7 +893,7 @@ Antelope block 8 & 9 -> EVM virtual block 4
 
 check the current config table:
 ```
-./cleos get table evmevmevmevm evmevmevmevm config
+./focli get table evmevmevmevm evmevmevmevm config
 {
   "rows": [{
       "version": 0,
@@ -910,10 +910,10 @@ check the current config table:
 }
 ```
 
-take the above example, we need to findout the Antelope block number x whose the timestamp equals to 2022-11-18T07:58:34.
+take the above example, we need to findout the fullon block number x whose the timestamp equals to 2022-11-18T07:58:34.
 Once we have decided the starting block number x, the next step is to build up the correct genesis for the virtual Ethereum chain. Take this as example.
 
-Antelope block 2:
+fullon block 2:
 
 ```json
 {
@@ -947,14 +947,14 @@ Result:
 
 This determines the value of the "timestamp" field in EVM genesis.
 
-Set the "mixHash" field to be "0x + Antelope starting block id", e.g.  "0x000000026d392f1bfeddb000555bcb03ca6e31a54c0cf9edc23cede42bda17e6"
+Set the "mixHash" field to be "0x + fullon starting block id", e.g.  "0x000000026d392f1bfeddb000555bcb03ca6e31a54c0cf9edc23cede42bda17e6"
 
-Set the "nonce" field to be the hex encoding of the value of the Antelope name of the account on which the EVM contract is deployed. So if the `evmevmevmevm` account name is used, then set the nonce to "0x56e4adc95b92b720". If the `eosio.evm` account name is used, then set the nonce to "0x5530ea015b900000".
+Set the "nonce" field to be the hex encoding of the value of the fullon name of the account on which the EVM contract is deployed. So if the `evmevmevmevm` account name is used, then set the nonce to "0x56e4adc95b92b720". If the `eosio.evm` account name is used, then set the nonce to "0x5530ea015b900000".
 
-The function `convert_name_to_value` from https://github.com/eosnetworkfoundation/eos-evm/blob/main/tests/leap/antelope_name.py can be used to get the appropriate nonce value using Python:
+The function `convert_name_to_value` from https://github.com/eosnetworkfoundation/eos-evm/blob/main/tests/leap/fullon_name.py can be used to get the appropriate nonce value using Python:
 
 ```shell
->>> from antelope_name import convert_name_to_value
+>>> from fullon_name import convert_name_to_value
 >>> print(f'0x{convert_name_to_value("evmevmevmevm"):x}')
 0x56e4adc95b92b720
 >>> print(f'0x{convert_name_to_value("eosio.evm"):x}')
@@ -1077,7 +1077,7 @@ Response:
 
 #### Setup Proxy To Separate Read Requests From Write Requests
 
-The proxy program will separate Ethereum's write requests (such as eth_sendRawTransaction,eth_gasPrice) from other requests (treated as read requests). The write requests should go to Transaction Wrapper (which wrap the ETH transaction into Antelope transaction and sign it and push to the Antelope blockchain). The read requests should go to eos-evm-rpc.
+The proxy program will separate Ethereum's write requests (such as eth_sendRawTransaction,eth_gasPrice) from other requests (treated as read requests). The write requests should go to Transaction Wrapper (which wrap the ETH transaction into fullon transaction and sign it and push to the fullon blockchain). The read requests should go to eos-evm-rpc.
 
 In order to get it working, docker is required. To install docker in Linux, see https://docs.docker.com/engine/install/ubuntu/
 
@@ -1093,7 +1093,7 @@ cd eos-evm/peripherals/proxy/
   upstream write {
     server 192.168.56.101:18888;
   }
-  
+
   upstream read {
     server 192.168.56.101:8881;
   }
@@ -1238,7 +1238,7 @@ git checkout evm
 cd docker
 make
 cd ../docker-compose
-docker-compose -f docker-compose.yml up  
+docker-compose -f docker-compose.yml up
 ```
 
 Once the blockscout docker is up, access http://127.0.0.1:4000 from any web explorer. You will see the web interface of the explorer, such as:
@@ -1249,9 +1249,9 @@ Once the blockscout docker is up, access http://127.0.0.1:4000 from any web expl
 These are the steps to cleanup the explorer database in case you want to start from scratch:
 
 ```shell
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # #
 # WARNING THIS WILL DELETE ALL DOCKER VOLUMES
-# # # # # # # # # # # # # # # # # # # # # # # # # # # # 
+# # # # # # # # # # # # # # # # # # # # # # # # # # # #
 docker rm -f $(docker ps -a -q)
 docker volume rm $(docker volume ls -q)
 ```
