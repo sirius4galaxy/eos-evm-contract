@@ -1,3 +1,6 @@
 build
 tests/build
 .vscode
+.test*
+.build*
+.run*

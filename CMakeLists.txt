@@ -4,7 +4,7 @@ project(evm_runtime)
 include(ExternalProject)
 # if no cdt root is given use default path
 if(CDT_ROOT STREQUAL "" OR NOT CDT_ROOT)
-   find_package(cdt)
+   find_package(flon.cdt)
 endif()
 
 option(WITH_TEST_ACTIONS
@@ -27,7 +27,7 @@ ExternalProject_Add(
    SOURCE_DIR ${CMAKE_SOURCE_DIR}/src
    BINARY_DIR ${CMAKE_BINARY_DIR}/evm_runtime
    CMAKE_ARGS -DCMAKE_BUILD_TYPE=Release
-              -DCMAKE_TOOLCHAIN_FILE=${CDT_ROOT}/lib/cmake/cdt/CDTWasmToolchain.cmake
+              -DCMAKE_TOOLCHAIN_FILE=${CDT_ROOT}/lib/cmake/flon.cdt/CDTWasmToolchain.cmake
               -DWITH_TEST_ACTIONS=${WITH_TEST_ACTIONS}
               -DWITH_LOGTIME=${WITH_LOGTIME}
               -DWITH_LARGE_STACK=${WITH_LARGE_STACK}

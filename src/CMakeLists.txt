@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.16)
 project(evm_runtime)
 
 set(EOSIO_WASM_OLD_BEHAVIOR "Off")
-find_package(cdt)
+find_package(flon.cdt)
 
 set(SOURCES, "")
 
@@ -34,14 +34,14 @@ add_compile_definitions(ANTELOPE)
 add_compile_definitions(PROJECT_VERSION="1.2.0")
 
 # ethash
-list(APPEND SOURCES 
+list(APPEND SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../silkworm/third_party/ethash/lib/keccak/keccak.c
     ${CMAKE_CURRENT_SOURCE_DIR}/../silkworm/third_party/ethash/lib/ethash/ethash.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../silkworm/third_party/ethash/lib/ethash/primes.c
 )
 
 # evmone
-list(APPEND SOURCES 
+list(APPEND SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../silkworm/third_party/evmone/lib/evmone/instructions_calls.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../silkworm/third_party/evmone/lib/evmone/vm.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../silkworm/third_party/evmone/lib/evmone/eof.cpp
@@ -51,7 +51,7 @@ list(APPEND SOURCES
 )
 
 # silkworm
-list(APPEND SOURCES 
+list(APPEND SOURCES
     ${CMAKE_CURRENT_SOURCE_DIR}/../silkworm/silkworm/core/common/util.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../silkworm/silkworm/core/common/endian.cpp
     ${CMAKE_CURRENT_SOURCE_DIR}/../silkworm/silkworm/core/common/assert.cpp
