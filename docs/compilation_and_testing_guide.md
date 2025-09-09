@@ -1,11 +1,11 @@
  ## Compile EVM Contract
- 
+
 Prerequisite:
 
    cmake 3.16 or later
-   Compile and install cdt project (https://github.com/AntelopeIO/cdt.git), please refer to https://github.com/AntelopeIO/cdt. 
-   After install, you need to ensure the following soft links exist (if not, please manually create these soft links). 
-   
+   Compile and install cdt project (https://github.com/AntelopeIO/cdt.git), please refer to https://github.com/AntelopeIO/cdt.
+   After install, you need to ensure the following soft links exist (if not, please manually create these soft links).
+
       /usr/local/bin/cdt-cpp
       /usr/local/bin/eosio-wast2wasm
       /usr/local/bin/eosio-wasm2wast
@@ -34,7 +34,7 @@ You should now see the compile contract
 [Optional, but required for EVM token testings] to compile contract with debug actions, use
 ```
 cmake .. -DWITH_TEST_ACTIONS=1
-Instead of 
+Instead of
 cmake ..
 ```
 <b>Note: if compilation errors occur, you may need to comment out some of the debug actions</b>
@@ -58,21 +58,21 @@ eos-evm/build/cmd/unit_test
 ```
 
 
-## Deploy EVM contract to nodeos
+## Deploy EVM contract to fonod
 
 Prerequisites:
 
-   Successfully built nodeos in leap repo (https://github.com/AntelopeIO/leap.git)
+   Successfully built fonod in leap repo (https://github.com/AntelopeIO/leap.git)
    Successfully built system contracts in eos-system-contracts repo (https://github.com/eosnetworkfoundation/eos-system-contracts.git)
    Successfully compiled EVM smart contracts
 
 <b> Bootstrapping Protocol Features </b>
 
 Change directory to the parent folder of “leap”
-Setup a soft link “./cleos” pointing to the right cleos binary built from leap
-start nodeos, it will listen to rpc port 8888 by default
+Setup a soft link “./focli” pointing to the right focli binary built from leap
+start fonod, it will listen to rpc port 8888 by default
 
-Activate the following protocol features 
+Activate the following protocol features
 
 ```
 echo "=== schedule protocol feature activations ==="
@@ -81,58 +81,58 @@ curl --data-binary '{"protocol_features_to_activate":["0ec7e080177b2c02b278d5088
 sleep 1.0
 
 echo "=== set boot contract ==="
-./cleos set code eosio ../eos-system-contracts/build/contracts/eosio.boot/eosio.boot.wasm
-./cleos set abi eosio ../eos-system-contracts/build/contracts/eosio.boot/eosio.boot.abi
+./focli set code eosio ../eos-system-contracts/build/contracts/eosio.boot/eosio.boot.wasm
+./focli set abi eosio ../eos-system-contracts/build/contracts/eosio.boot/eosio.boot.abi
 
 sleep 1.0
 
 echo "=== init protocol features ==="
-./cleos push action eosio activate '["f0af56d2c5a48d60a4a5b5c903edfb7db3a736a94ed589d0b797df33ff9d3e1d"]' -p eosio 
-./cleos push action eosio activate '["e0fb64b1085cc5538970158d05a009c24e276fb94e1a0bf6a528b48fbc4ff526"]' -p eosio
-./cleos push action eosio activate '["d528b9f6e9693f45ed277af93474fd473ce7d831dae2180cca35d907bd10cb40"]' -p eosio
-./cleos push action eosio activate '["c3a6138c5061cf291310887c0b5c71fcaffeab90d5deb50d3b9e687cead45071"]' -p eosio 
-./cleos push action eosio activate '["bcd2a26394b36614fd4894241d3c451ab0f6fd110958c3423073621a70826e99"]' -p eosio
-./cleos push action eosio activate '["ad9e3d8f650687709fd68f4b90b41f7d825a365b02c23a636cef88ac2ac00c43"]' -p eosio
-./cleos push action eosio activate '["8ba52fe7a3956c5cd3a656a3174b931d3bb2abb45578befc59f283ecd816a405"]' -p eosio 
-./cleos push action eosio activate '["6bcb40a24e49c26d0a60513b6aeb8551d264e4717f306b81a37a5afb3b47cedc"]' -p eosio
-./cleos push action eosio activate '["68dcaa34c0517d19666e6b33add67351d8c5f69e999ca1e37931bc410a297428"]' -p eosio
-./cleos push action eosio activate '["5443fcf88330c586bc0e5f3dee10e7f63c76c00249c87fe4fbf7f38c082006b4"]' -p eosio
-./cleos push action eosio activate '["4fca8bd82bbd181e714e283f83e1b45d95ca5af40fb89ad3977b653c448f78c2"]' -p eosio
-./cleos push action eosio activate '["ef43112c6543b88db2283a2e077278c315ae2c84719a8b25f25cc88565fbea99"]' -p eosio
-./cleos push action eosio activate '["4a90c00d55454dc5b059055ca213579c6ea856967712a56017487886a4d4cc0f"]' -p eosio 
-./cleos push action eosio activate '["35c2186cc36f7bb4aeaf4487b36e57039ccf45a9136aa856a5d569ecca55ef2b"]' -p eosio
-./cleos push action eosio activate '["299dcb6af692324b899b39f16d5a530a33062804e41f09dc97e9f156b4476707"]' -p eosio
-./cleos push action eosio activate '["2652f5f96006294109b3dd0bbde63693f55324af452b799ee137a81a905eed25"]' -p eosio
-./cleos push action eosio activate '["1a99a59d87e06e09ec5b028a9cbb7749b4a5ad8819004365d02dc4379a8b7241"]' -p eosio
+./focli push action eosio activate '["f0af56d2c5a48d60a4a5b5c903edfb7db3a736a94ed589d0b797df33ff9d3e1d"]' -p eosio
+./focli push action eosio activate '["e0fb64b1085cc5538970158d05a009c24e276fb94e1a0bf6a528b48fbc4ff526"]' -p eosio
+./focli push action eosio activate '["d528b9f6e9693f45ed277af93474fd473ce7d831dae2180cca35d907bd10cb40"]' -p eosio
+./focli push action eosio activate '["c3a6138c5061cf291310887c0b5c71fcaffeab90d5deb50d3b9e687cead45071"]' -p eosio
+./focli push action eosio activate '["bcd2a26394b36614fd4894241d3c451ab0f6fd110958c3423073621a70826e99"]' -p eosio
+./focli push action eosio activate '["ad9e3d8f650687709fd68f4b90b41f7d825a365b02c23a636cef88ac2ac00c43"]' -p eosio
+./focli push action eosio activate '["8ba52fe7a3956c5cd3a656a3174b931d3bb2abb45578befc59f283ecd816a405"]' -p eosio
+./focli push action eosio activate '["6bcb40a24e49c26d0a60513b6aeb8551d264e4717f306b81a37a5afb3b47cedc"]' -p eosio
+./focli push action eosio activate '["68dcaa34c0517d19666e6b33add67351d8c5f69e999ca1e37931bc410a297428"]' -p eosio
+./focli push action eosio activate '["5443fcf88330c586bc0e5f3dee10e7f63c76c00249c87fe4fbf7f38c082006b4"]' -p eosio
+./focli push action eosio activate '["4fca8bd82bbd181e714e283f83e1b45d95ca5af40fb89ad3977b653c448f78c2"]' -p eosio
+./focli push action eosio activate '["ef43112c6543b88db2283a2e077278c315ae2c84719a8b25f25cc88565fbea99"]' -p eosio
+./focli push action eosio activate '["4a90c00d55454dc5b059055ca213579c6ea856967712a56017487886a4d4cc0f"]' -p eosio
+./focli push action eosio activate '["35c2186cc36f7bb4aeaf4487b36e57039ccf45a9136aa856a5d569ecca55ef2b"]' -p eosio
+./focli push action eosio activate '["299dcb6af692324b899b39f16d5a530a33062804e41f09dc97e9f156b4476707"]' -p eosio
+./focli push action eosio activate '["2652f5f96006294109b3dd0bbde63693f55324af452b799ee137a81a905eed25"]' -p eosio
+./focli push action eosio activate '["1a99a59d87e06e09ec5b028a9cbb7749b4a5ad8819004365d02dc4379a8b7241"]' -p eosio
 ```
 
 
 <b>Create EVM contract account</b>
 
-Create account evmevmevmevm (here private key is 5JURSKS1BrJ1TagNBw1uVSzTQL2m9eHGkjknWeZkjSt33Awtior) 
+Create account evmevmevmevm (here private key is 5JURSKS1BrJ1TagNBw1uVSzTQL2m9eHGkjknWeZkjSt33Awtior)
 ```
-./cleos create account eosio evmevmevmevm EOS8kE63z4NcZatvVWY4jxYdtLg6UEA123raMGwS6QDKwpQ69eGcP EOS8kE63z4NcZatvVWY4jxYdtLg6UEA123raMGwS6QDKwpQ69eGcP
+./focli create account eosio evmevmevmevm EOS8kE63z4NcZatvVWY4jxYdtLg6UEA123raMGwS6QDKwpQ69eGcP EOS8kE63z4NcZatvVWY4jxYdtLg6UEA123raMGwS6QDKwpQ69eGcP
 ```
 Set EVM contract into account evmevmevmevm
 ```
-./cleos set code evmevmevmevm ../eos-evm/contract/build/evm_runtime/evm_runtime.wasm
-./cleos set abi evmevmevmevm ../eos-evm/contract/build/evm_runtime/evm_runtime.abi
+./focli set code evmevmevmevm ../eos-evm/contract/build/evm_runtime/evm_runtime.wasm
+./focli set abi evmevmevmevm ../eos-evm/contract/build/evm_runtime/evm_runtime.abi
 ```
 (Optional) Verify if account has set code, you will got the non-zero code hash which means contract is deployed, for example:
 ```
-./cleos get code evmevmevmevm
+./focli get code evmevmevmevm
 code hash: 8789fe904edbe10aafb5330da7ab41395f8ae1620a6d2a0a4f68fe75464c1e19
 ```
 
 <b>Initialize EVM contract</b>
 The EVM contract will not allow any actions except `init` until its chain id & native token is configured
 ```
-./cleos push action evmevmevmevm init '{"chainid": 15555}'
+./focli push action evmevmevmevm init '{"chainid": 15555}'
 ```
 
 add eosio.code to active permission
 ```
-./cleos set account permission evmevmevmevm active --add-code
+./focli set account permission evmevmevmevm active --add-code
 ```
 
 ## Set balance and transfer native EVM token via EVM smart contract: ##
@@ -171,7 +171,7 @@ Please find the get_balance.py from https://github.com/eosnetworkfoundation/eos-
 
 Push debug action setbal:
 ```
-./cleos push action evmevmevmevm setbal '{"addy":"2787b98fc4e731d0456b3941f0b3fe2e01439961", "bal":"0000000000000000000000000000000100000000000000000000000000000000"}' -p evmevmevmevm
+./focli push action evmevmevmevm setbal '{"addy":"2787b98fc4e731d0456b3941f0b3fe2e01439961", "bal":"0000000000000000000000000000000100000000000000000000000000000000"}' -p evmevmevmevm
 ```
 Note: the balance value need to be raw 32 hex bytes
 
@@ -204,13 +204,13 @@ executed transaction: 2a47a2782419b16713e8c01739343a589b2a24b168411350b77ba1bd71
 
 <b>Common Errors seen when pushing evm action:</b>
 
-assertion failure with message: validate_transaction error: 21, 
+assertion failure with message: validate_transaction error: 21,
 This is because the nonce value is incorrect
 
-assertion failure with message: validate_transaction error: 23, 
+assertion failure with message: validate_transaction error: 23,
 Insufficient account balance
 
-assertion failure with message: validate_transaction error: 20, 
+assertion failure with message: validate_transaction error: 20,
 kSenderNoEOA: (looks like this means the “from” account can’t be the contract account)
 
 Other errors are defined in:
@@ -251,7 +251,7 @@ contract Storage {
     }
 
     /**
-     * @dev Return value 
+     * @dev Return value
      * @return value of 'number'
      */
     function retrieve() public view returns (uint256){
@@ -282,9 +282,9 @@ python3 ./send_data_via_cleos.py 2787b98fc4e731d0456b3941f0b3fe2e01439961 "" 0 6
 ```
 Please note that the contract address will be 3f4b0f92007341792aa61e065484e48e583ebeb9 for nonce 0
 and will be 51a97d86ae7c83f050056f03ebbe451001046764 for nonce 1
-At this moment please get back the contract address via 
+At this moment please get back the contract address via
 ```
-./cleos get table evmevmevmevm evmevmevmevm account
+./focli get table evmevmevmevm evmevmevmevm account
 ```
 
 
@@ -306,15 +306,15 @@ Quite challenging (To figure out where does the actually contract code begin, I 
 
 Command:
 ```
-./cleos push action evmevmevmevm updatecode '{"address":"2787b98fc4e731d0456b3941f0b3fe2e01430000","incarnation":0,"code_hash":"286e3d498e2178afc91275f11d446e62a0d85b060ce66d6ca75f6ec9d874d560","code":"608060405234801561001057600080fd5b50600436106100365760003560e01c80632e64cec11461003b5780636057361d14610059575b600080fd5b610043610075565b60405161005091906100d9565b60405180910390f35b610073600480360381019061006e919061009d565b61007e565b005b60008054905090565b8060008190555050565b60008135905061009781610103565b92915050565b6000602082840312156100b3576100b26100fe565b5b60006100c184828501610088565b91505092915050565b6100d3816100f4565b82525050565b60006020820190506100ee60008301846100ca565b92915050565b6000819050919050565b600080fd5b61010c816100f4565b811461011757600080fd5b5056fea26469706673582212209a159a4f3847890f10bfb87871a61eba91c5dbf5ee3cf6398207e292eee22a1664736f6c63430008070033"}' -p evmevmevmevm
+./focli push action evmevmevmevm updatecode '{"address":"2787b98fc4e731d0456b3941f0b3fe2e01430000","incarnation":0,"code_hash":"286e3d498e2178afc91275f11d446e62a0d85b060ce66d6ca75f6ec9d874d560","code":"608060405234801561001057600080fd5b50600436106100365760003560e01c80632e64cec11461003b5780636057361d14610059575b600080fd5b610043610075565b60405161005091906100d9565b60405180910390f35b610073600480360381019061006e919061009d565b61007e565b005b60008054905090565b8060008190555050565b60008135905061009781610103565b92915050565b6000602082840312156100b3576100b26100fe565b5b60006100c184828501610088565b91505092915050565b6100d3816100f4565b82525050565b60006020820190506100ee60008301846100ca565b92915050565b6000819050919050565b600080fd5b61010c816100f4565b811461011757600080fd5b5056fea26469706673582212209a159a4f3847890f10bfb87871a61eba91c5dbf5ee3cf6398207e292eee22a1664736f6c63430008070033"}' -p evmevmevmevm
 ```
 
 
 <b>Verify if the ethereum contract code is deployed via EVM contract on eosio:</b>
 
-Command: 
+Command:
 ```
-./cleos get table evmevmevmevm evmevmevmevm account
+./focli get table evmevmevmevm evmevmevmevm account
 ```
 Example output:
 ```
@@ -368,7 +368,7 @@ Take the above solidity contract in https://remix.ethereum.org/, executing the �
 please find send_data_via_cleos.py from https://github.com/eosnetworkfoundation/eos-evm/tree/kayan-rpc-fix/testing-utils
 
 
-To use the script: 
+To use the script:
 ```
 Python3 ./send_data_via_cleos.py FROM_ACCOUNT TO_ACCOUNT AMOUNT INPUT_DATA NONCE
 ```
@@ -414,9 +414,9 @@ You should able see:
 
 <b>Verify the actual storage in eosio blockchain via get_table_rows:</b>
 
-Run 
+Run
 ```
-./cleos get table evmevmevmevm evmevmevmevm account
+./focli get table evmevmevmevm evmevmevmevm account
 ```
 Find out the table id of the ethereum smart contract storage table:
 
@@ -432,13 +432,13 @@ Example output (in this case the table id is 3):
       "code_hash": "286e3d498e2178afc91275f11d446e62a0d85b060ce66d6ca75f6ec9d874d560"
     }
 ```
-Run the 2nd command 
+Run the 2nd command
 ```
-./cleos get table evmevmevmevm TABLE_ID storage
+./focli get table evmevmevmevm TABLE_ID storage
 ```
 to get all the storages, for example:
 ```
-./cleos get table evmevmevmevm 3 storage
+./focli get table evmevmevmevm 3 storage
 {
   "rows": [{
       "id": 0,
@@ -463,14 +463,14 @@ to get all the storages, for example:
 - Completed the above tests
 
 ## Steps
-1. From a clean database, start nodeos with SHIP
+1. From a clean database, start fonod with SHIP
 2. clean start eos-evm-node, for example:
 ```
 ./build/cmd/eos-evm-node --evm-abi ./evm.abi --chain-data ./chain-data --ship-chain-state-dir ./ship-chain-data --plugin block_conversion_plugin --plugin blockchain_plugin --nocolor 1 --verbosity=5 --ship-genesis 2
 ```
 3. start eos-evm-rpc in the same machine, for example:
 ```
-./build/cmd/eos-evm-rpc --eos-evm-node=127.0.0.1:8080 --chaindata=./chain-data 
+./build/cmd/eos-evm-rpc --eos-evm-node=127.0.0.1:8080 --chaindata=./chain-data
 ```
 
 ## Make sure RPC response:
